@@ -52,7 +52,7 @@ class ResumeTailor:
         validation_response = self.client.chat.completions.create(
             model="gpt-4o-mini",
             messages=validation_convo,
-            temperature=0.2,
+            temperature=1.5,
             max_tokens=1000,
             top_p=1,
             frequency_penalty=0,
