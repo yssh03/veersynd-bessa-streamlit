@@ -24,6 +24,10 @@ else:
 
 resume = st.text_area("Enter Resume Bullet Points:",)
 
+#Adithya Arya changes --> If multiple bullet points, create multiple objects and run the customize routine for each point separately.
+
+resume = resume.split("\n")
+
 button = st.button("Customize")
 loading = False
 if button:
@@ -40,13 +44,20 @@ if button:
         else:
             jd_data = uploaded_jd
         api_key = os.getenv("api_key")
-        resume_tailor = ResumeTailor(api_key, resume, jd_data)
-        flag = resume_tailor.validate_jd()
+        resume_tailor = []
+        for bullet_point in resume:
+            resume_tailor.append(ResumeTailor(api_key, bullet_point, jd_data))
         
-        if not flag:
-            st.warning("Are you sure this resume point is relevant to the JD? Consider removing it from your resume or be a little more specific.")
-        else:    
-            resume_tailored = resume_tailor.customize_resume()
-            st.write("## Customized Bullet Points!!")
-            st.write(str(resume_tailored))
+        flags = []
+        for index in range(len(resume_tailor)):
+            flags.append(resume_tailor[index].validate_jd())
+        
+        st.write("## Customized Bullet Points!!")
+        for flag,bullet_point in zip(flags,resume_tailor):
+            if not flag:
+                st.warning("Are you sure this resume point is relevant to the JD? Consider removing it from your resume or be a little more specific.")
+            else:    
+                resume_tailored = bullet_point.customize_resume()
+                #st.write("## Customized Bullet Points!!")
+                st.write(str(resume_tailored))
         
